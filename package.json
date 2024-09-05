@@ -1,0 +1,13 @@
+{
+  "name": "fundamentos-nodejs-challenge",
+  "version": "1.0.0",
+  "description": "Desafio Rocketseat Ignite Fundamentos NodeJS Challenge 2022",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --trace-warnings src/server.js"
+  },
+  "keywords": ["Desafio rocketseat","ignite", "fundamentos nodejs challenge", "2022","api"],
+  "author": "Domingos Canhanga",
+  "license": "ISC"
+}
