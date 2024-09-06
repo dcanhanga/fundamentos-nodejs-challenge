@@ -1,42 +1,56 @@
 import {randomUUID} from 'node:crypto'
 import { buildRoutePath } from './../utils/build-route-path.js';
 import { Batabase } from './../database/db.js';
+import {validateCreateTaskPayload} from './../validators/validators.js'
 const database = new Batabase();
 const createTasks = {
   method: "POST",
   url: buildRoutePath('/tasks'),
   handler: (req, res) => {
-    for (const field of ['name', 'description']) {
-      if (!req.body) {
-        return res.writeHead(400).end(JSON.stringify({ error: `O Corpo da requisição deve ser um objeto`}));
-      }
-      if (typeof req.body[field] === "undefined" ||typeof req.body[field] === null) {
-        return res.writeHead(400).end(JSON.stringify({ error: `${field} é obrigatório` }));
-      }
-      if (typeof req.body[field] !== "string") {
-        return res.writeHead(400).end(JSON.stringify({ error: `${field} deve ser uma string`}));
-      }
+     const validationError = validateCreateTaskPayload(req.body);
+    if (validationError) {
+      return res.writeHead(400).end(JSON.stringify({ error: validationError }));
     }
-    const {name, description} = req.body
-    const tasks = {
+    const {title, description } = req.body;
+    const task = {
       id: randomUUID(),
-      name,
+      title,
       description,
       completed_at: null,
       created_at: new Date(),
       updated_at: null
-      };
-    database.insert('tasks', tasks);
-    return res.writeHead(201).end()
+    };
+    database.insert('tasks', task);
+    return res.writeHead(201).end();
   }
-}
+};
+
+
 const listTasks = {
   method: 'GET',
   url: buildRoutePath('/tasks'),
-  handler: (_, res) => {
-    const tasks = database.select('tasks');
+  handler: (req, res) => {
+    const queries = ['title', 'description'];
+    const filter = queries.reduce((acc, query) => {
+      if (req.query[query]) {
+        return { ...acc, [query]: req.query[query] };
+      }
+      return acc;
+    }, {});
+    const tasks = database.select('tasks',filter);
     return res.end(JSON.stringify({tasks}))
   }
 }
 
-export const routes = [listTasks, createTasks]
+const listTaskById = {
+  method: 'GET',
+  url: buildRoutePath('/tasks/:id'),
+  handler: (req, res) => {
+    const tasks = database.select('tasks',{id: req.params.id});
+    return res.end(JSON.stringify({tasks}))
+  }
+}
+
+
+
+export const routes = [listTasks, createTasks,listTaskById]

@@ -1,30 +1,33 @@
 import fs from 'node:fs/promises'
- const databasePath = new URL('./db.json', import.meta.url)
+ const databasePath = new URL('db.json', import.meta.url)
 export class Batabase {
   #database = {}
   #persist() {
     fs.writeFile(databasePath, JSON.stringify(this.#database))
   }
-  construtor() {
-    fs.readfile(databasePath, 'utf-8').then(data => {
+  constructor() {
+    fs.readFile(databasePath, 'utf-8').then(data => {
       this.#database = JSON.parse(data)
     }).catch(() => {
       this.#persist()
     })
   }
+
   select(table, filter) {
     let data = this.#database[table] ?? []
     if (!filter) {
       return data
     }
     const { id, ...filterWithoutId } = filter
+
     if (id) {
       return data.find(item => item.id === id)
     }
-    if (filterWithoutId.name || filterWithoutId.email) {
+
+    if (Object.keys(filterWithoutId).length) {
       data = data.filter(row => {
         return Object.entries(filterWithoutId).some(([key, value]) => {
-          return row[key].toLowerCase().includes(value.toLowerCase())
+          return row[key].toLowerCase().includes(value?.toLowerCase())
         })
       })
     }
@@ -56,3 +59,5 @@ export class Batabase {
     }
   }
 }
+
+

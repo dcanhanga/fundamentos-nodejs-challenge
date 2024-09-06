@@ -1,8 +1,9 @@
-function validateRequiredFields(body) {
+function validateRequiredFields(body, fields) {
+
   if (Object.keys(body).length === 0) {
-    return 'Os campos name e description são obrigatórios';
+    return `Os campos ${['title', 'description'].toString()} são obrigatórios`;
   }
-  for (const field of ['name', 'description']) {
+  for (const field of fields) {
     if (!body[field]) {
       return `${field} é obrigatório`;
     }
@@ -34,7 +35,7 @@ export function validateCreateTaskPayload(body) {
   response = validateBodyIsObject(body);
   if (response) return response;
 
-  response = validateRequiredFields(body);
+  response = validateRequiredFields(body,['title', 'description']);
   if (response) return response;
 
   return null;
