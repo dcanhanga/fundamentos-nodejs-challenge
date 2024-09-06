@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
-const databasePath = new URL('./db.json', import.meta.url)
-export class BataBase {
+ const databasePath = new URL('./db.json', import.meta.url)
+export class Batabase {
   #database = {}
   #persist() {
     fs.writeFile(databasePath, JSON.stringify(this.#database))

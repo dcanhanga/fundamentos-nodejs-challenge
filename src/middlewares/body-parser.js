@@ -1,3 +1,4 @@
+
 export async function bodyParser(req, res) {
   const buffers = []
   for await (const chunk of req) {
@@ -8,5 +9,5 @@ export async function bodyParser(req, res) {
   } catch {
     req.body = null
   }
-  res.setHeader("Content-type", "application/json")
+  res.setHeader('Content-type', 'application/json')
 }
