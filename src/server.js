@@ -1,7 +1,7 @@
 import http from 'node:http';
 import {routes} from './routes/routes.js'
 import { bodyParser } from './middlewares/body-parser.js';
-import {extrarctQueryParameters} from './utils/extract-query-parameters.js'
+import {extractQueryParameters} from './utils/extract-query-parameters.js'
 const server = http.createServer(async(req, res) => {
    await bodyParser(req, res);
     const { url, method } = req;
@@ -12,7 +12,7 @@ const server = http.createServer(async(req, res) => {
         const routesParams = req.url.match(route.url)
         const { query, ...params } = routesParams.groups;
         req.params = params;
-        req.query = query ? extrarctQueryParameters(query) : {};
+        req.query = query ? extractQueryParameters(query) : {};
         return route.handler(req, res)
     }
     return res.writeHead(404).end();

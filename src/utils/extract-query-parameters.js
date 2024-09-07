@@ -1,4 +1,4 @@
-export function extrarctQueryParameters(query) {
+export function extractQueryParameters(query) {
   return query
     .substr(1)
     .split('&')

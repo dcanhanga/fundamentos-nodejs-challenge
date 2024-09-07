@@ -1,8 +1,8 @@
 import {randomUUID} from 'node:crypto'
 import { buildRoutePath } from './../utils/build-route-path.js';
-import { Batabase } from './../database/db.js';
-import {validateCreateTaskPayload} from './../validators/validators.js'
-const database = new Batabase();
+import { Database as Database } from './../database/db.js';
+import {validateCreateTaskPayload, validateUpdateTaskPayload} from './../validators/validators.js'
+const database = new Database()
 const createTasks = {
   method: "POST",
   url: buildRoutePath('/tasks'),
@@ -24,8 +24,6 @@ const createTasks = {
     return res.writeHead(201).end();
   }
 };
-
-
 const listTasks = {
   method: 'GET',
   url: buildRoutePath('/tasks'),
@@ -41,7 +39,6 @@ const listTasks = {
     return res.end(JSON.stringify({tasks}))
   }
 }
-
 const listTaskById = {
   method: 'GET',
   url: buildRoutePath('/tasks/:id'),
@@ -58,8 +55,42 @@ const deleteTask = {
     return res.writeHead(204).end()
   }
 }
+const updateTask = {
+  method: 'PUT',
+  url: buildRoutePath('/tasks/:id'),
+  handler: (req, res) => {
+    const validationError = validateUpdateTaskPayload(req.body);
+    if (validationError) {
+      return res.writeHead(400).end(JSON.stringify({ error: validationError }));
+    }
+    console.log(req.body)
+    const tasks = database.select('tasks',{id: req.params.id});
+    database.update('tasks', req.params.id, {
+      ...tasks,
+      title: req.body.title ?? tasks.title,
+      description: req.body.description ?? tasks.description,
+      updated_at: new Date()
+    }
+    )
+    return res.writeHead(204).end()
+  }
+}
+const completeTask = {
+  method: 'PATCH',
+  url: buildRoutePath('/tasks/:id/complete'),
+  handler: (req, res) => {
+    const tasks = database.select('tasks',{id: req.params.id});
+    database.update('tasks', req.params.id, {
+      ...tasks,
+      completed_at: new Date(),
+      updated_at: new Date()
+    }
+    )
+    return res.writeHead(204).end()
+  }
+}
 
 
 
 
-export const routes = [listTasks, createTasks,listTaskById,deleteTask]
+export const routes = [listTasks, createTasks,listTaskById,deleteTask,updateTask,completeTask]
