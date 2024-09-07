@@ -50,7 +50,16 @@ const listTaskById = {
     return res.end(JSON.stringify({tasks}))
   }
 }
+const deleteTask = {
+  method: 'DELETE',
+  url: buildRoutePath('/tasks/:id'),
+    handler: (req, res) => {
+   database.delete('tasks', req.params.id)
+    return res.writeHead(204).end()
+  }
+}
 
 
 
-export const routes = [listTasks, createTasks,listTaskById]
+
+export const routes = [listTasks, createTasks,listTaskById,deleteTask]
