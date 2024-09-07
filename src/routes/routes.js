@@ -43,7 +43,10 @@ const listTaskById = {
   method: 'GET',
   url: buildRoutePath('/tasks/:id'),
   handler: (req, res) => {
-    const tasks = database.select('tasks',{id: req.params.id});
+    const tasks = database.select('tasks', { id: req.params.id });
+     if (!tasks) {
+      return res.writeHead(404).end(JSON.stringify({error: 'Task não existe'}))
+    }
     return res.end(JSON.stringify({tasks}))
   }
 }
@@ -61,10 +64,13 @@ const updateTask = {
   handler: (req, res) => {
     const validationError = validateUpdateTaskPayload(req.body);
     if (validationError) {
-      return res.writeHead(400).end(JSON.stringify({ error: validationError }));
+      return res.writeHead(404).end(JSON.stringify({error: 'Task não existe'}))
     }
     console.log(req.body)
-    const tasks = database.select('tasks',{id: req.params.id});
+    const tasks = database.select('tasks', { id: req.params.id });
+    if (!tasks) {
+      return res.writeHead(404).end({error: 'Task não existe'})
+    }
     database.update('tasks', req.params.id, {
       ...tasks,
       title: req.body.title ?? tasks.title,
@@ -79,7 +85,10 @@ const completeTask = {
   method: 'PATCH',
   url: buildRoutePath('/tasks/:id/complete'),
   handler: (req, res) => {
-    const tasks = database.select('tasks',{id: req.params.id});
+    const tasks = database.select('tasks', { id: req.params.id });
+    if (!tasks) {
+      return res.writeHead(404).end(JSON.stringify({error: 'Task não existe'}))
+    }
     database.update('tasks', req.params.id, {
       ...tasks,
       completed_at: new Date(),
