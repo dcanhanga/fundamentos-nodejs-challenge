@@ -2,6 +2,7 @@ import {randomUUID} from 'node:crypto'
 import { buildRoutePath } from './../utils/build-route-path.js';
 import { Database as Database } from './../database/db.js';
 import {validateCreateTaskPayload, validateUpdateTaskPayload} from './../validators/validators.js'
+import { run } from '../streams/import-csv.js';
 const database = new Database()
 const createTasks = {
   method: "POST",
@@ -21,6 +22,14 @@ const createTasks = {
       updated_at: null
     };
     database.insert('tasks', task);
+    return res.writeHead(201).end();
+  }
+};
+const importCSVTasks = {
+  method: "POST",
+  url: buildRoutePath('/tasks/import-csv'),
+  handler: async(req, res) => {
+  await run()
     return res.writeHead(201).end();
   }
 };
@@ -102,4 +111,4 @@ const completeTask = {
 
 
 
-export const routes = [listTasks, createTasks,listTaskById,deleteTask,updateTask,completeTask]
+export const routes = [listTasks, createTasks,listTaskById,deleteTask,updateTask,completeTask,importCSVTasks]

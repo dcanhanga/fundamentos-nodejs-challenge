@@ -13,9 +13,9 @@ const server = http.createServer(async(req, res) => {
         const { query, ...params } = routesParams.groups;
         req.params = params;
         req.query = query ? extractQueryParameters(query) : {};
-        return route.handler(req, res)
+        return await route.handler(req, res)
     }
     return res.writeHead(404).end();
 });
-const PORT = 3000;
+export const PORT = 3000;
 server.listen(PORT, () => console.log(`Server is Running on port ${PORT}`));
